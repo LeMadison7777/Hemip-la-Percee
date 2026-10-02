@@ -1,0 +1,373 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("NEON_DATABASE_URL")
+  directUrl = env("NEON_DIRECT_URL")
+}
+
+model AcademicDecision {
+  id          String       @id
+  type        DecisionType
+  studentId   String?
+  title       String
+  body        String
+  createdById String
+  createdAt   DateTime     @default(now())
+  User        User         @relation(fields: [createdById], references: [id])
+}
+
+model AcademicResult {
+  id             String         @id
+  studentId      String
+  courseCode     String
+  courseTitle    String
+  note           Decimal        @db.Decimal(5, 2)
+  credit         Decimal        @db.Decimal(4, 1)
+  coefficient    Decimal        @default(1) @db.Decimal(4, 2)
+  semester       String
+  academicYear   String
+  workflow       ResultWorkflow @default(draft)
+  isPublished    Boolean        @default(false)
+  deletedAt      DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime
+  StudentProfile StudentProfile @relation(fields: [studentId], references: [id])
+
+  @@index([studentId, academicYear, semester])
+}
+
+model Account {
+  id                String  @id
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  User              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model AdmissionApplication {
+  id        String   @id
+  fullName  String
+  email     String
+  phone     String
+  filiere   String
+  message   String?
+  status    String   @default("received")
+  createdAt DateTime @default(now())
+}
+
+model Album {
+  id          String       @id
+  title       String
+  slug        String       @unique
+  description String?
+  published   Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  AlbumMedia  AlbumMedia[]
+}
+
+model AlbumMedia {
+  id        String   @id
+  albumId   String?
+  filename  String
+  url       String
+  altText   String
+  width     Int?
+  height    Int?
+  mimeType  String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  Album     Album?   @relation(fields: [albumId], references: [id])
+}
+
+model Attendance {
+  id             String           @id
+  studentId      String
+  courseCode     String
+  sessionDate    DateTime
+  status         AttendanceStatus
+  markedById     String
+  note           String?
+  createdAt      DateTime         @default(now())
+  User           User             @relation(fields: [markedById], references: [id])
+  StudentProfile StudentProfile   @relation(fields: [studentId], references: [id])
+
+  @@unique([studentId, courseCode, sessionDate])
+}
+
+model AuditLog {
+  id        String   @id
+  userId    String?
+  action    String
+  targetId  String?
+  reason    String?
+  payload   Json?
+  ipAddress String?
+  timestamp DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+
+  @@index([action])
+  @@index([timestamp])
+}
+
+model ContactMessage {
+  id        String   @id
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model DebtRecord {
+  id             String         @id
+  studentId      String
+  amount         Decimal        @db.Decimal(12, 2)
+  label          String
+  isSettled      Boolean        @default(false)
+  isArchived     Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  StudentProfile StudentProfile @relation(fields: [studentId], references: [id])
+}
+
+model FinancialStatus {
+  id                String         @id
+  studentId         String         @unique
+  clearedForResults Boolean        @default(false)
+  balanceDue        Decimal        @default(0) @db.Decimal(12, 2)
+  lastUpdated       DateTime
+  StudentProfile    StudentProfile @relation(fields: [studentId], references: [id])
+}
+
+model InternalMessage {
+  id                                     String    @id
+  senderId                               String
+  recipientId                            String
+  subject                                String
+  body                                   String
+  readAt                                 DateTime?
+  createdAt                              DateTime  @default(now())
+  User_InternalMessage_recipientIdToUser User      @relation("InternalMessage_recipientIdToUser", fields: [recipientId], references: [id])
+  User_InternalMessage_senderIdToUser    User      @relation("InternalMessage_senderIdToUser", fields: [senderId], references: [id])
+}
+
+model OfflineFormQueue {
+  id        String            @id
+  userId    String?
+  formType  String
+  payload   Json
+  status    OfflineFormStatus @default(queued)
+  attempts  Int               @default(0)
+  lastError String?
+  createdAt DateTime          @default(now())
+  syncedAt  DateTime?
+  User      User?             @relation(fields: [userId], references: [id])
+}
+
+model Payment {
+  id             String         @id
+  studentId      String
+  amount         Decimal        @db.Decimal(12, 2)
+  currency       String         @default("XAF")
+  reference      String         @unique
+  status         PaymentStatus  @default(pending)
+  validated      Boolean        @default(false)
+  validatedById  String?
+  paidAt         DateTime?
+  importedFrom   String?
+  isArchived     Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime
+  StudentProfile StudentProfile @relation(fields: [studentId], references: [id])
+  User           User?          @relation(fields: [validatedById], references: [id])
+}
+
+model Permission {
+  id          String       @id
+  key         String       @unique
+  description String
+  roleLinks   RolePermission[]
+}
+
+model PushSubscription {
+  id        String   @id
+  userId    String?
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+}
+
+model RateLimitEntry {
+  id          String   @id
+  key         String   @unique
+  count       Int
+  windowStart DateTime
+}
+
+model RoleRecord {
+  id          String       @id
+  name        Role         @unique
+  description String
+  permissionLinks RolePermission[]
+}
+
+model RolePermission {
+  permissionId String     @map("A")
+  roleRecordId String     @map("B")
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, map: "_PermissionToRoleRecord_A_fkey")
+  roleRecord   RoleRecord @relation(fields: [roleRecordId], references: [id], onDelete: Cascade, map: "_PermissionToRoleRecord_B_fkey")
+
+  @@unique([permissionId, roleRecordId], map: "_PermissionToRoleRecord_AB_unique")
+  @@index([roleRecordId], map: "_PermissionToRoleRecord_B_index")
+  @@map("_PermissionToRoleRecord")
+}
+
+model Session {
+  id           String   @id
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model StudentProfile {
+  id              String           @id
+  userId          String           @unique
+  matricule       String           @unique
+  filiere         String
+  yearLevel       Int
+  academicYear    String
+  dateOfBirth     DateTime?
+  phone           String?
+  deletedAt       DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  AcademicResult  AcademicResult[]
+  Attendance      Attendance[]
+  DebtRecord      DebtRecord[]
+  FinancialStatus FinancialStatus?
+  Payment         Payment[]
+  User            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TeacherProfile {
+  id         String    @id
+  userId     String    @unique
+  employeeNo String    @unique
+  department String
+  courses    String[]
+  deletedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+  User       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TimetableEntry {
+  id          String @id
+  filiere     String
+  yearLevel   Int
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  courseCode  String
+  courseTitle String
+  room        String
+  teacherName String
+}
+
+model User {
+  id                                                String             @id
+  name                                              String?
+  email                                             String             @unique
+  emailVerified                                     DateTime?
+  image                                             String?
+  passwordHash                                      String?
+  role                                              Role               @default(visitor)
+  isActive                                          Boolean            @default(true)
+  deletedAt                                         DateTime?
+  otpCodeHash                                       String?
+  otpExpiresAt                                      DateTime?
+  failedLoginAttempts                               Int                @default(0)
+  lockedUntil                                       DateTime?
+  createdAt                                         DateTime           @default(now())
+  updatedAt                                         DateTime
+  AcademicDecision                                  AcademicDecision[]
+  Account                                           Account[]
+  Attendance                                        Attendance[]
+  AuditLog                                          AuditLog[]
+  InternalMessage_InternalMessage_recipientIdToUser InternalMessage[]  @relation("InternalMessage_recipientIdToUser")
+  InternalMessage_InternalMessage_senderIdToUser    InternalMessage[]  @relation("InternalMessage_senderIdToUser")
+  OfflineFormQueue                                  OfflineFormQueue[]
+  Payment                                           Payment[]
+  PushSubscription                                  PushSubscription[]
+  Session                                           Session[]
+  StudentProfile                                    StudentProfile?
+  TeacherProfile                                    TeacherProfile?
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum AttendanceStatus {
+  present
+  absent
+  late
+  excused
+}
+
+enum DecisionType {
+  admission
+  exclusion
+  deferral
+  clearance_exception
+  other
+}
+
+enum OfflineFormStatus {
+  queued
+  synced
+  failed
+}
+
+enum PaymentStatus {
+  pending
+  validated
+  rejected
+}
+
+enum ResultWorkflow {
+  draft
+  validated
+  published
+}
+
+enum Role {
+  visitor
+  student
+  teacher
+  payment_manager
+  academic_admin
+  super_admin
+}
+
+

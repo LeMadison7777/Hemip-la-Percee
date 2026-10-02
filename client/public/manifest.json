@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "HEMIP — La Percée",
+  "short_name": "HEMIP",
+  "description": "Haute École de Management et d’Ingénierie — La Percée, Pointe-Noire.",
+  "lang": "fr-CG",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fdfdfd",
+  "theme_color": "#1094d7",
+  "icons": [
+    { "src": "/icons/pwa-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/pwa-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

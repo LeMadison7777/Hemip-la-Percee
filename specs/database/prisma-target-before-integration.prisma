@@ -1,0 +1,656 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("NEON_DATABASE_URL")
+  directUrl = env("NEON_DIRECT_URL")
+}
+
+enum UserRole {
+  visitor
+  student
+  teacher
+  payment_manager
+  academic_admin
+  super_admin
+}
+
+enum PaymentMethod {
+  cash
+  mobile_money
+  bank_transfer
+  other
+}
+
+enum PaymentStatus {
+  pending
+  validated
+  rejected
+  reversed
+}
+
+enum AcademicDecisionType {
+  PASSAGE
+  PASSAGE_AVEC_DETTES
+  REDOUBLEMENT
+  EXCLUSION
+  DIPLOME
+  OTHER
+}
+
+enum WorkflowStatus {
+  DRAFT
+  SUBMITTED
+  VERIFIED
+  APPROVED
+  PUBLISHED
+  CHANGES_REQUESTED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  EXPIRED
+  ARCHIVED
+}
+
+enum ThreadKind {
+  PRIVATE
+  GROUP
+  CLASS
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum MediaVisibility {
+  PUBLIC
+  RESTRICTED
+}
+
+model User {
+  id                      String                    @id @default(cuid())
+  name                    String?
+  email                   String?                   @unique
+  emailVerified           DateTime?
+  image                   String?
+  phone                   String?                   @unique
+  role                    UserRole                  @default(visitor)
+  isActive                Boolean                   @default(true)
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  accounts                Account[]
+  sessions                Session[]
+  student                 Student?
+  teacher                 Teacher?
+  paymentsRecorded        PaymentRecord[]           @relation("PaymentRecordedBy")
+  paymentsValidated       PaymentRecord[]           @relation("PaymentValidatedBy")
+  gradesEntered           GradeRecord[]             @relation("GradeEnteredBy")
+  gradeReviews            GradeRecord[]             @relation("GradeReviewedBy")
+  decisionsCreated        AcademicDecision[]        @relation("DecisionCreatedBy")
+  decisionsApproved       AcademicDecision[]        @relation("DecisionApprovedBy")
+  overridesCreated        FinancialAccessOverride[]
+  auditLogs               AuditLog[]
+  mediaUploaded           Media[]
+  attendanceMarked        Attendance[]              @relation("AttendanceMarkedBy")
+  teacherAttendanceMarked TeacherAttendance[]       @relation("TeacherAttendanceMarkedBy")
+  announcementsCreated    Announcement[]            @relation("AnnouncementCreatedBy")
+  announcementsPublished  Announcement[]            @relation("AnnouncementPublishedBy")
+  threadsCreated          MessageThread[]           @relation("ThreadCreatedBy")
+  threadMemberships       ThreadParticipant[]
+  messagesSent            Message[]                 @relation("MessageSender")
+  storedDocuments         StoredDocument[]
+
+  @@index([role, isActive])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Student {
+  id              String                    @id @default(cuid())
+  userId          String                    @unique
+  matricule       String                    @unique
+  programCode     String
+  programBlock    String?
+  level           Int
+  cohort          String?
+  enrollmentDate  DateTime?
+  isActive        Boolean                   @default(true)
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+  user            User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  financialStatus StudentFinancialStatus?
+  payments        PaymentRecord[]
+  grades          GradeRecord[]
+  decisions       AcademicDecision[]
+  attendance      Attendance[]
+  debts           DebtRecord[]
+  accessOverrides FinancialAccessOverride[]
+
+  @@index([programCode, level])
+  @@index([cohort])
+}
+
+model Teacher {
+  id            String              @id @default(cuid())
+  userId        String              @unique
+  employeeCode  String?             @unique
+  specialty     String?
+  isActive      Boolean             @default(true)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courses       Course[]
+  attendance    TeacherAttendance[]
+  scheduleSlots ScheduleSlot[]
+
+  @@index([isActive])
+}
+
+model Course {
+  id            String         @id @default(cuid())
+  code          String
+  title         String
+  programCode   String
+  level         Int
+  coefficient   Decimal        @default(1.0) @db.Decimal(5, 2)
+  teacherId     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  teacher       Teacher?       @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+  scheduleSlots ScheduleSlot[]
+  grades        GradeRecord[]
+  attendance    Attendance[]
+
+  @@unique([code, programCode, level])
+  @@index([programCode, level])
+}
+
+model AcademicYear {
+  id        String             @id @default(cuid())
+  label     String             @unique
+  startsAt  DateTime?
+  endsAt    DateTime?
+  isCurrent Boolean            @default(false)
+  createdAt DateTime           @default(now())
+  semesters Semester[]
+  decisions AcademicDecision[]
+  grades    GradeRecord[]
+}
+
+model Semester {
+  id             String        @id @default(cuid())
+  academicYearId String
+  label          String
+  startsAt       DateTime?
+  endsAt         DateTime?
+  isPublished    Boolean       @default(false)
+  publishedAt    DateTime?
+  academicYear   AcademicYear  @relation(fields: [academicYearId], references: [id], onDelete: Cascade)
+  grades         GradeRecord[]
+  attendance     Attendance[]
+
+  @@unique([academicYearId, label])
+  @@index([isPublished, publishedAt])
+}
+
+model FeePlan {
+  id            String          @id @default(cuid())
+  name          String
+  programCode   String?
+  level         Int?
+  academicYear  String?
+  tuition       Decimal         @db.Decimal(12, 2)
+  registration  Decimal         @default(50000) @db.Decimal(12, 2)
+  reEnrollment  Decimal         @default(45000) @db.Decimal(12, 2)
+  examFee       Decimal         @default(30000) @db.Decimal(12, 2)
+  currency      String          @default("XAF")
+  isActive      Boolean         @default(true)
+  effectiveFrom DateTime?
+  effectiveTo   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  payments      PaymentRecord[]
+  debts         DebtRecord[]
+
+  @@index([programCode, level, isActive])
+}
+
+model PaymentImportBatch {
+  id           String          @id @default(cuid())
+  fileName     String
+  fileRef      String?
+  checksum     String?
+  importedById String
+  totalRows    Int             @default(0)
+  acceptedRows Int             @default(0)
+  rejectedRows Int             @default(0)
+  status       WorkflowStatus  @default(DRAFT)
+  previewJson  Json?
+  confirmedAt  DateTime?
+  createdAt    DateTime        @default(now())
+  payments     PaymentRecord[]
+
+  @@index([importedById, createdAt])
+  @@index([status, createdAt])
+}
+
+model PaymentRecord {
+  id             String              @id @default(cuid())
+  studentId      String
+  feePlanId      String?
+  importBatchId  String?
+  amount         Decimal             @db.Decimal(12, 2)
+  currency       String              @default("XAF")
+  method         PaymentMethod
+  reference      String?
+  paidAt         DateTime?
+  status         PaymentStatus       @default(pending)
+  recordedById   String
+  validatedById  String?
+  validatedAt    DateTime?
+  receiptFileRef String?
+  internalNote   String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  student        Student             @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  feePlan        FeePlan?            @relation(fields: [feePlanId], references: [id], onDelete: SetNull)
+  importBatch    PaymentImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
+  recordedBy     User                @relation("PaymentRecordedBy", fields: [recordedById], references: [id], onDelete: Restrict)
+  validatedBy    User?               @relation("PaymentValidatedBy", fields: [validatedById], references: [id], onDelete: SetNull)
+
+  @@unique([method, reference])
+  @@index([studentId, status, paidAt])
+  @@index([status, createdAt])
+}
+
+model StudentFinancialStatus {
+  id                 String                    @id @default(cuid())
+  studentId          String                    @unique
+  balanceDue         Decimal                   @default(0) @db.Decimal(12, 2)
+  clearedForResults  Boolean                   @default(false)
+  overrideActive     Boolean                   @default(false)
+  overrideReason     String?
+  lastRecalculatedAt DateTime?
+  updatedAt          DateTime                  @updatedAt
+  student            Student                   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  overrides          FinancialAccessOverride[]
+
+  @@index([clearedForResults, balanceDue])
+}
+
+model FinancialAccessOverride {
+  id                String                 @id @default(cuid())
+  studentId         String
+  financialStatusId String
+  grantedById       String
+  reason            String
+  fileRef           String?
+  active            Boolean                @default(true)
+  startsAt          DateTime               @default(now())
+  expiresAt         DateTime?
+  revokedAt         DateTime?
+  revokedById       String?
+  createdAt         DateTime               @default(now())
+  student           Student                @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  financialStatus   StudentFinancialStatus @relation(fields: [financialStatusId], references: [id], onDelete: Cascade)
+  grantedBy         User                   @relation(fields: [grantedById], references: [id], onDelete: Restrict)
+
+  @@index([studentId, active, expiresAt])
+}
+
+model DebtRecord {
+  id          String    @id @default(cuid())
+  studentId   String
+  feePlanId   String?
+  description String
+  amountDue   Decimal   @db.Decimal(12, 2)
+  dueAt       DateTime?
+  settledAt   DateTime?
+  createdAt   DateTime  @default(now())
+  student     Student   @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  feePlan     FeePlan?  @relation(fields: [feePlanId], references: [id], onDelete: SetNull)
+
+  @@index([studentId, settledAt, dueAt])
+}
+
+model GradeRecord {
+  id             String         @id @default(cuid())
+  studentId      String
+  courseId       String
+  semesterId     String
+  academicYearId String
+  grade          Decimal?       @db.Decimal(5, 2)
+  status         WorkflowStatus @default(DRAFT)
+  enteredById    String
+  reviewedById   String?
+  submittedAt    DateTime?
+  reviewedAt     DateTime?
+  publishedAt    DateTime?
+  source         String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  student        Student        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course         Course         @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  semester       Semester       @relation(fields: [semesterId], references: [id], onDelete: Restrict)
+  academicYear   AcademicYear   @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+  enteredBy      User           @relation("GradeEnteredBy", fields: [enteredById], references: [id], onDelete: Restrict)
+  reviewedBy     User?          @relation("GradeReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@unique([studentId, courseId, semesterId])
+  @@index([studentId, academicYearId, status])
+  @@index([courseId, semesterId, status])
+}
+
+model AcademicDecision {
+  id             String               @id @default(cuid())
+  studentId      String
+  academicYearId String
+  decisionType   AcademicDecisionType
+  status         WorkflowStatus       @default(DRAFT)
+  reason         String
+  createdById    String
+  approvedById   String?
+  submittedAt    DateTime?
+  verifiedAt     DateTime?
+  approvedAt     DateTime?
+  publishedAt    DateTime?
+  changeReason   String?
+  supersedesId   String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  student        Student              @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  academicYear   AcademicYear         @relation(fields: [academicYearId], references: [id], onDelete: Restrict)
+  createdBy      User                 @relation("DecisionCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  approvedBy     User?                @relation("DecisionApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  @@index([studentId, academicYearId, status])
+  @@index([status, publishedAt])
+}
+
+model Media {
+  id           String          @id @default(cuid())
+  type         MediaType
+  title        String
+  altText      String?
+  usageRights  String          @default("school_owned")
+  sourceUrl    String?
+  storageKey   String?
+  mimeType     String?
+  fileSize     Int?
+  width        Int?
+  height       Int?
+  visibility   MediaVisibility @default(PUBLIC)
+  uploadedById String
+  uploadedAt   DateTime        @default(now())
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  uploadedBy   User            @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  albums       AlbumMedia[]
+
+  @@index([type, visibility, uploadedAt])
+}
+
+model Album {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  slug        String       @unique
+  published   Boolean      @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  medias      AlbumMedia[]
+
+  @@index([published, publishedAt])
+}
+
+model AlbumMedia {
+  albumId   String
+  mediaId   String
+  sortOrder Int     @default(0)
+  caption   String?
+  album     Album   @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  media     Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@id([albumId, mediaId])
+  @@unique([albumId, sortOrder])
+  @@index([mediaId])
+}
+
+model Attendance {
+  id         String           @id @default(cuid())
+  studentId  String
+  courseId   String
+  semesterId String
+  sessionAt  DateTime
+  status     AttendanceStatus
+  reason     String?
+  markedById String
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  student    Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course     Course           @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  semester   Semester         @relation(fields: [semesterId], references: [id], onDelete: Restrict)
+  markedBy   User             @relation("AttendanceMarkedBy", fields: [markedById], references: [id], onDelete: Restrict)
+
+  @@unique([studentId, courseId, sessionAt])
+  @@index([studentId, sessionAt, status])
+  @@index([courseId, sessionAt])
+}
+
+model TeacherAttendance {
+  id         String           @id @default(cuid())
+  teacherId  String
+  sessionAt  DateTime
+  status     AttendanceStatus
+  reason     String?
+  markedById String
+  createdAt  DateTime         @default(now())
+  teacher    Teacher          @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  markedBy   User             @relation("TeacherAttendanceMarkedBy", fields: [markedById], references: [id], onDelete: Restrict)
+
+  @@unique([teacherId, sessionAt])
+  @@index([teacherId, sessionAt, status])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  reason    String?
+  fileRef   String?
+  before    Json?
+  after     Json?
+  requestId String?
+  ipHash    String?
+  createdAt DateTime @default(now())
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entity, entityId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}
+
+// Store only a one-way hash of the OTP; raw verification codes must never be persisted.
+model OtpChallenge {
+  id             String    @id @default(cuid())
+  identifierHash String
+  codeHash       String
+  expiresAt      DateTime
+  attempts       Int       @default(0)
+  maxAttempts    Int       @default(5)
+  consumedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  requestIpHash  String?
+
+  @@index([identifierHash, expiresAt, consumedAt])
+  @@index([expiresAt])
+}
+
+// Overlap/conflict enforcement needs a transaction-safe server check, plus a PostgreSQL
+// exclusion constraint or equivalent protection for concurrent schedule writes.
+model ScheduleSlot {
+  id          String   @id @default(cuid())
+  programCode String
+  level       Int
+  cohort      String?
+  courseId    String
+  teacherId   String?
+  weekday     Int
+  startsAt    DateTime
+  endsAt      DateTime
+  room        String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  teacher     Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+
+  @@index([programCode, level, cohort, weekday, startsAt])
+  @@index([teacherId, weekday, startsAt])
+  @@index([room, weekday, startsAt])
+}
+
+model Announcement {
+  id                String             @id @default(cuid())
+  title             String
+  body              String             @db.Text
+  status            AnnouncementStatus @default(DRAFT)
+  targetProgramCode String?
+  targetLevel       Int?
+  targetCohort      String?
+  createdById       String
+  publishedById     String?
+  publishedAt       DateTime?
+  expiresAt         DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  createdBy         User               @relation("AnnouncementCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  publishedBy       User?              @relation("AnnouncementPublishedBy", fields: [publishedById], references: [id], onDelete: SetNull)
+
+  @@index([status, publishedAt, expiresAt])
+  @@index([targetProgramCode, targetLevel, targetCohort])
+}
+
+model MessageThread {
+  id           String              @id @default(cuid())
+  kind         ThreadKind
+  title        String?
+  programCode  String?
+  cohort       String?
+  createdById  String
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  createdBy    User                @relation("ThreadCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  participants ThreadParticipant[]
+  messages     Message[]
+
+  @@index([kind, programCode, cohort])
+  @@index([updatedAt])
+}
+
+model ThreadParticipant {
+  threadId String
+  userId   String
+  joinedAt DateTime      @default(now())
+  leftAt   DateTime?
+  thread   MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([threadId, userId])
+  @@index([userId, leftAt])
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  threadId  String
+  senderId  String
+  body      String        @db.Text
+  editedAt  DateTime?
+  deletedAt DateTime?
+  createdAt DateTime      @default(now())
+  thread    MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender    User          @relation("MessageSender", fields: [senderId], references: [id], onDelete: Restrict)
+
+  @@index([threadId, createdAt])
+  @@index([senderId, createdAt])
+}
+
+model PreEnrolledAccount {
+  email     String   @id
+  role      UserRole
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role, isActive])
+}
+
+model OtpRateLimit {
+  keyHash         String   @id
+  windowStartedAt DateTime
+  requestCount    Int      @default(0)
+  updatedAt       DateTime @updatedAt
+
+  @@index([windowStartedAt])
+}
+
+model StoredDocument {
+  id           String   @id @default(cuid())
+  objectKey    String   @unique
+  uploadedById String
+  originalName String
+  contentType  String
+  sizeBytes    Int
+  createdAt    DateTime @default(now())
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  @@index([uploadedById, createdAt])
+}

@@ -1,0 +1,548 @@
+// Photos de l’album HEMIP extraites du PDF joint. Toutes les 49 images sont conservées.
+export type HemipMedia = { id: string; page: number; category: string; title: string; alt: string; width: number; height: number; local: string; localThumb: string };
+
+export const media: HemipMedia[] = [
+  {
+    "id": "hemip-01",
+    "page": 1,
+    "category": "Portrait & supports",
+    "title": "Portrait & supports · 01",
+    "alt": "Présentation des formations et supports HEMIP",
+    "width": 810,
+    "height": 1080,
+    "local": "/media/hero/album-01.webp",
+    "localThumb": "/media/thumbs/album-01.webp"
+  },
+  {
+    "id": "hemip-02",
+    "page": 2,
+    "category": "Vie étudiante",
+    "title": "Vie étudiante · 02",
+    "alt": "Un groupe d’étudiantes et d’étudiants réunis en extérieur",
+    "width": 1280,
+    "height": 958,
+    "local": "/media/hero/album-02.webp",
+    "localThumb": "/media/thumbs/album-02.webp"
+  },
+  {
+    "id": "hemip-03",
+    "page": 3,
+    "category": "Rencontres",
+    "title": "Rencontres · 03",
+    "alt": "Échanges et réunion en groupe",
+    "width": 960,
+    "height": 1280,
+    "local": "/media/hero/album-03.webp",
+    "localThumb": "/media/thumbs/album-03.webp"
+  },
+  {
+    "id": "hemip-04",
+    "page": 4,
+    "category": "Rencontres",
+    "title": "Rencontres · 04",
+    "alt": "Échanges et réunion en groupe",
+    "width": 960,
+    "height": 1280,
+    "local": "/media/hero/album-04.webp",
+    "localThumb": "/media/thumbs/album-04.webp"
+  },
+  {
+    "id": "hemip-05",
+    "page": 5,
+    "category": "Rencontres",
+    "title": "Rencontres · 05",
+    "alt": "Échanges et réunion en groupe",
+    "width": 960,
+    "height": 1280,
+    "local": "/media/hero/album-05.webp",
+    "localThumb": "/media/thumbs/album-05.webp"
+  },
+  {
+    "id": "hemip-06",
+    "page": 6,
+    "category": "Rencontres",
+    "title": "Rencontres · 06",
+    "alt": "Échanges et réunion en groupe",
+    "width": 960,
+    "height": 1280,
+    "local": "/media/hero/album-06.webp",
+    "localThumb": "/media/thumbs/album-06.webp"
+  },
+  {
+    "id": "hemip-07",
+    "page": 7,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 07",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-07.webp",
+    "localThumb": "/media/thumbs/album-07.webp"
+  },
+  {
+    "id": "hemip-08",
+    "page": 8,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 08",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-08.webp",
+    "localThumb": "/media/thumbs/album-08.webp"
+  },
+  {
+    "id": "hemip-09",
+    "page": 9,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 09",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-09.webp",
+    "localThumb": "/media/thumbs/album-09.webp"
+  },
+  {
+    "id": "hemip-10",
+    "page": 10,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 10",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-10.webp",
+    "localThumb": "/media/thumbs/album-10.webp"
+  },
+  {
+    "id": "hemip-11",
+    "page": 11,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 11",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-11.webp",
+    "localThumb": "/media/thumbs/album-11.webp"
+  },
+  {
+    "id": "hemip-12",
+    "page": 12,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 12",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-12.webp",
+    "localThumb": "/media/thumbs/album-12.webp"
+  },
+  {
+    "id": "hemip-13",
+    "page": 13,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 13",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-13.webp",
+    "localThumb": "/media/thumbs/album-13.webp"
+  },
+  {
+    "id": "hemip-14",
+    "page": 14,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 14",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-14.webp",
+    "localThumb": "/media/thumbs/album-14.webp"
+  },
+  {
+    "id": "hemip-15",
+    "page": 15,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 15",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-15.webp",
+    "localThumb": "/media/thumbs/album-15.webp"
+  },
+  {
+    "id": "hemip-16",
+    "page": 16,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 16",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-16.webp",
+    "localThumb": "/media/thumbs/album-16.webp"
+  },
+  {
+    "id": "hemip-17",
+    "page": 17,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 17",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-17.webp",
+    "localThumb": "/media/thumbs/album-17.webp"
+  },
+  {
+    "id": "hemip-18",
+    "page": 18,
+    "category": "Communauté HEMIP",
+    "title": "Communauté HEMIP · 18",
+    "alt": "Temps collectif avec la communauté de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-18.webp",
+    "localThumb": "/media/thumbs/album-18.webp"
+  },
+  {
+    "id": "hemip-19",
+    "page": 19,
+    "category": "Culture & événements",
+    "title": "Culture & événements · 19",
+    "alt": "Événement culturel et moments de partage",
+    "width": 810,
+    "height": 1080,
+    "local": "/media/hero/album-19.webp",
+    "localThumb": "/media/thumbs/album-19.webp"
+  },
+  {
+    "id": "hemip-20",
+    "page": 20,
+    "category": "Culture & événements",
+    "title": "Culture & événements · 20",
+    "alt": "Événement culturel et moments de partage",
+    "width": 810,
+    "height": 1080,
+    "local": "/media/hero/album-20.webp",
+    "localThumb": "/media/thumbs/album-20.webp"
+  },
+  {
+    "id": "hemip-21",
+    "page": 21,
+    "category": "Culture & événements",
+    "title": "Culture & événements · 21",
+    "alt": "Événement culturel et moments de partage",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-21.webp",
+    "localThumb": "/media/thumbs/album-21.webp"
+  },
+  {
+    "id": "hemip-22",
+    "page": 22,
+    "category": "Culture & événements",
+    "title": "Culture & événements · 22",
+    "alt": "Événement culturel et moments de partage",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-22.webp",
+    "localThumb": "/media/thumbs/album-22.webp"
+  },
+  {
+    "id": "hemip-23",
+    "page": 23,
+    "category": "Culture & événements",
+    "title": "Culture & événements · 23",
+    "alt": "Événement culturel et moments de partage",
+    "width": 810,
+    "height": 1080,
+    "local": "/media/hero/album-23.webp",
+    "localThumb": "/media/thumbs/album-23.webp"
+  },
+  {
+    "id": "hemip-24",
+    "page": 24,
+    "category": "Culture & événements",
+    "title": "Culture & événements · 24",
+    "alt": "Événement culturel et moments de partage",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-24.webp",
+    "localThumb": "/media/thumbs/album-24.webp"
+  },
+  {
+    "id": "hemip-25",
+    "page": 25,
+    "category": "Événement",
+    "title": "Événement · 25",
+    "alt": "Affiche extraite du dossier fourni",
+    "width": 763,
+    "height": 1080,
+    "local": "/media/hero/album-25.webp",
+    "localThumb": "/media/thumbs/album-25.webp"
+  },
+  {
+    "id": "hemip-26",
+    "page": 26,
+    "category": "Communauté",
+    "title": "Communauté · 26",
+    "alt": "Portrait de groupe et moments de rencontre",
+    "width": 960,
+    "height": 1280,
+    "local": "/media/hero/album-26.webp",
+    "localThumb": "/media/thumbs/album-26.webp"
+  },
+  {
+    "id": "hemip-27",
+    "page": 27,
+    "category": "Communauté",
+    "title": "Communauté · 27",
+    "alt": "Portrait de groupe et moments de rencontre",
+    "width": 961,
+    "height": 1280,
+    "local": "/media/hero/album-27.webp",
+    "localThumb": "/media/thumbs/album-27.webp"
+  },
+  {
+    "id": "hemip-28",
+    "page": 28,
+    "category": "Communauté",
+    "title": "Communauté · 28",
+    "alt": "Portrait de groupe et moments de rencontre",
+    "width": 1280,
+    "height": 961,
+    "local": "/media/hero/album-28.webp",
+    "localThumb": "/media/thumbs/album-28.webp"
+  },
+  {
+    "id": "hemip-29",
+    "page": 29,
+    "category": "Communauté",
+    "title": "Communauté · 29",
+    "alt": "Portrait de groupe et moments de rencontre",
+    "width": 1280,
+    "height": 961,
+    "local": "/media/hero/album-29.webp",
+    "localThumb": "/media/thumbs/album-29.webp"
+  },
+  {
+    "id": "hemip-30",
+    "page": 30,
+    "category": "Communauté",
+    "title": "Communauté · 30",
+    "alt": "Portrait de groupe et moments de rencontre",
+    "width": 1280,
+    "height": 960,
+    "local": "/media/hero/album-30.webp",
+    "localThumb": "/media/thumbs/album-30.webp"
+  },
+  {
+    "id": "hemip-31",
+    "page": 31,
+    "category": "Projets & formation",
+    "title": "Projets & formation · 31",
+    "alt": "Scène de projet, formation ou activité de l’établissement",
+    "width": 1080,
+    "height": 810,
+    "local": "/media/hero/album-31.webp",
+    "localThumb": "/media/thumbs/album-31.webp"
+  },
+  {
+    "id": "hemip-32",
+    "page": 32,
+    "category": "Projets & formation",
+    "title": "Projets & formation · 32",
+    "alt": "Scène de projet, formation ou activité de l’établissement",
+    "width": 526,
+    "height": 358,
+    "local": "/media/hero/album-32.webp",
+    "localThumb": "/media/thumbs/album-32.webp"
+  },
+  {
+    "id": "hemip-33",
+    "page": 33,
+    "category": "Projets & formation",
+    "title": "Projets & formation · 33",
+    "alt": "Scène de projet, formation ou activité de l’établissement",
+    "width": 494,
+    "height": 692,
+    "local": "/media/hero/album-33.webp",
+    "localThumb": "/media/thumbs/album-33.webp"
+  },
+  {
+    "id": "hemip-34",
+    "page": 34,
+    "category": "Projets & formation",
+    "title": "Projets & formation · 34",
+    "alt": "Scène de projet, formation ou activité de l’établissement",
+    "width": 658,
+    "height": 485,
+    "local": "/media/hero/album-34.webp",
+    "localThumb": "/media/thumbs/album-34.webp"
+  },
+  {
+    "id": "hemip-35",
+    "page": 35,
+    "category": "Identité HEMIP",
+    "title": "Identité HEMIP · 35",
+    "alt": "Logo officiel de la Haute École de Management et d’Ingénierie — La Percée",
+    "width": 260,
+    "height": 284,
+    "local": "/media/hero/album-35.webp",
+    "localThumb": "/media/thumbs/album-35.webp"
+  },
+  {
+    "id": "hemip-36",
+    "page": 36,
+    "category": "Campus & identité",
+    "title": "Campus & identité · 36",
+    "alt": "Enseigne et environnement HEMIP",
+    "width": 4160,
+    "height": 3120,
+    "local": "/media/hero/album-36.webp",
+    "localThumb": "/media/thumbs/album-36.webp"
+  },
+  {
+    "id": "hemip-37",
+    "page": 37,
+    "category": "Campus & identité",
+    "title": "Campus & identité · 37",
+    "alt": "Visuel d’identité HEMIP présent dans le document",
+    "width": 1440,
+    "height": 5760,
+    "local": "/media/hero/album-37.webp",
+    "localThumb": "/media/thumbs/album-37.webp"
+  },
+  {
+    "id": "hemip-38",
+    "page": 38,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 38",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 590,
+    "height": 374,
+    "local": "/media/hero/album-38.webp",
+    "localThumb": "/media/thumbs/album-38.webp"
+  },
+  {
+    "id": "hemip-39",
+    "page": 39,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 39",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 503,
+    "height": 769,
+    "local": "/media/hero/album-39.webp",
+    "localThumb": "/media/thumbs/album-39.webp"
+  },
+  {
+    "id": "hemip-40",
+    "page": 40,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 40",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 510,
+    "height": 748,
+    "local": "/media/hero/album-40.webp",
+    "localThumb": "/media/thumbs/album-40.webp"
+  },
+  {
+    "id": "hemip-41",
+    "page": 41,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 41",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 509,
+    "height": 448,
+    "local": "/media/hero/album-41.webp",
+    "localThumb": "/media/thumbs/album-41.webp"
+  },
+  {
+    "id": "hemip-42",
+    "page": 42,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 42",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 504,
+    "height": 772,
+    "local": "/media/hero/album-42.webp",
+    "localThumb": "/media/thumbs/album-42.webp"
+  },
+  {
+    "id": "hemip-43",
+    "page": 43,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 43",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 591,
+    "height": 378,
+    "local": "/media/hero/album-43.webp",
+    "localThumb": "/media/thumbs/album-43.webp"
+  },
+  {
+    "id": "hemip-44",
+    "page": 44,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 44",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 500,
+    "height": 772,
+    "local": "/media/hero/album-44.webp",
+    "localThumb": "/media/thumbs/album-44.webp"
+  },
+  {
+    "id": "hemip-45",
+    "page": 45,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 45",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 501,
+    "height": 771,
+    "local": "/media/hero/album-45.webp",
+    "localThumb": "/media/thumbs/album-45.webp"
+  },
+  {
+    "id": "hemip-46",
+    "page": 46,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 46",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 494,
+    "height": 784,
+    "local": "/media/hero/album-46.webp",
+    "localThumb": "/media/thumbs/album-46.webp"
+  },
+  {
+    "id": "hemip-47",
+    "page": 47,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 47",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 501,
+    "height": 776,
+    "local": "/media/hero/album-47.webp",
+    "localThumb": "/media/thumbs/album-47.webp"
+  },
+  {
+    "id": "hemip-48",
+    "page": 48,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 48",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 591,
+    "height": 373,
+    "local": "/media/hero/album-48.webp",
+    "localThumb": "/media/thumbs/album-48.webp"
+  },
+  {
+    "id": "hemip-49",
+    "page": 49,
+    "category": "Ateliers techniques",
+    "title": "Ateliers techniques · 49",
+    "alt": "Étudiantes et étudiants en travaux pratiques et apprentissage technique",
+    "width": 506,
+    "height": 408,
+    "local": "/media/hero/album-49.webp",
+    "localThumb": "/media/thumbs/album-49.webp"
+  }
+];
+
+export function mediaSource(item: HemipMedia, size: "hero" | "thumb" = "hero"): string {
+  return size === "thumb" ? item.localThumb : item.local;
+}
